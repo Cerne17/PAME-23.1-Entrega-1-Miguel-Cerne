@@ -28,7 +28,14 @@ Fidelização    : 4 ou mais consultas
 */
 
 class Cliente {
-
+    /*
+        Cliente = {
+            id: identifier
+            nome: 'nome',
+            pets: ['pet1', 'pet2'],
+            fidelizado: true or false
+        }
+    */    
     #id;
 
     constructor (idC, nomeClienteC, petsC, fidelizadoC) {
@@ -44,7 +51,14 @@ class Cliente {
 
 }
 class Animal {
-
+    /*
+    animal = {
+        id: identifier,
+        nome: 'nome',
+        dono: 'dono',
+        consultas: ['consulta1', 'consulta2']
+    }
+    */
     #id;
 
     constructor (idC, nomePetC, donoC, consultasC) {
@@ -56,7 +70,16 @@ class Animal {
 }
 
 class Consulta {
-
+    /*
+        consulta = {
+            id: identifier,
+            nomeCliente: 'nome',
+            nomePet: 'nome',
+            nomeFuncionario: 'nome',
+            status: 'status',
+            data: [dia, mes, ano] 
+        }
+    */
     #id;
 
     constructor (idC, nomeClienteC, nomePetC, nomeFuncionarioC, statusC, dataC) {
@@ -81,25 +104,111 @@ class Funcionario {
         this.#id             = idC;
         this.nomeFuncionario = nomeFuncionarioC;
         this.#senha          = senhaC;
+        this.clientes        = "";
+        this.consultas       
     }
+    mostrarDados () {
 
+        console.log("---------- MOSTRAR DADOS ----------");
+        // Funcionario = {id: identification, nome: "Nome", senha: "senha", clientes: {"nome": ["pet1", "pet2", ...]}}
+        let clientes = this.clientes.keys();
+        let pets     = this.clientes.values();
+
+        console.log(`Nome:     ${this.nomeFuncionario}`);
+        console.log(`Senha:    ${this.#senha}`);
+        console.log(`Clientes: ${clientes}`);
+        console.log(`Animais:  ${pets}`);
+    }
     get id () {
         return this.id;
     }
+    modificarDados () {
+        
+        let valido = false;
+        while (!valido) {
+            console.clear();
+            console.log("---------- MODIFICAR DADOS ----------");
+            console.log("Que dados modificar? (1. Nome; 2. Senha)");
+            
+            let info = prompt(" ~ ");
+            info = parseInt(info);
 
-    set 
+            if (info == NaN || info < 1 || info > 2) {
+                console.clear();
+                console.log("Entrada inválida, tente novamente.");
+
+            } else if (info == 1) {
+                let novoNome = prompt("Insira o novo nome: ");
+                this.nomeFuncionario = novoNome;
+                valido = true;
+
+            } else if (info == 2) {
+                let novaSenha = prompt("Insira a nova senha: ");
+                this.senha = novaSenha;
+                valido = true;
+            }
+        }
+    }
+    verClientes () {
+        console.clear();
+        console.log("---------- VER DADOS ----------");
+
+        let clientes = this.clientes.keys();
+        let quantidade = clientes.length;
+        for (let i = 1; i <= quantidade; i++) {
+            console.log(`${i}. ${clientes[i]}`);
+        }
+    }
+    verPets () {
+        console.clear();
+        console.log("---------- VER PETS ----------");
+
+        let pets = this.clientes.values();
+        let quantidade = pets.length;
+        for (let i = 1; i <= quantidade; i++) {
+            console.log(`${i}. ${pets[i]}`);
+        }
+    }
+    verConsultas () {
+
+    }
+    mudarStatusConsulta () {
+
+    }
 }
 
-class FuncionarioNaoLogado extends Funcionario {
+class FuncionarioNaoLogado {
     /*
     Métodos: 
         login, 
         cadastro, 
         sair
     */
-   constructor () {
 
+    #id;
+
+   constructor () {
+        this.#id             = "";
+        this.nomeFuncionario = "";
+        this.senha           = "";
    }
+   login (funcionarios) {
+        console.clear();
+        console.log("---------- LOGIN ----------");
+        this.nomeFuncionario = prompt("Insira seu nome: ");
+        this.senha           = prompt("Insira sua senha: ");
+        
+    }
+   cadastro () {
+        console.clear();
+        console.log("---------- CADASTRO ----------");
+        this.nomeFuncionario = prompt("Insira seu nome: ");
+        this.senha          = prompt("Insira sua senha: ");
+
+        this.#id = uuidv4(); // Criação do id unico e aleatório
+
+        return new [this.#id, this.nomeFuncionario, this.senha];
+    }
 }
 
 class FuncionarioLogado extends Funcionario {
@@ -122,9 +231,90 @@ class FuncionarioLogado extends Funcionario {
 
 class Sistema {
 
+    funcionarios = [];
+    #id;
+
     constructor () {
 
+        this.funcionario; // objeto de funcionario
+
+
+        valido = false;
+        while (!valido) {
+
+            // Inicialização do sistema, começa perguntando o que o funcionário gostaria de fazer.
+            console.log("MENU:");
+            console.log("1. Cadastro\n2. Logar\n3. Sair");
+            
+            let opcao = prompt("Digite a opção: ");
+            opcao = parseInt(opcao);
+            
+            if (opcao == NaN || opcao > 3 || opcao < 0) {
+                
+                console.log("Entrada inválida, tente novamente.");
+                console.clear();
+
+            } else {
+                valido = true;
+                console.clear();
+            }
+
+            switch (opcao) {
+                case 1:
+                    this.funcionario = new FuncionarioNaoLogado();
+                    funcionarios.push(funcionario.cadastro());
+                case 2:
+                    this.funcionario = new FuncionarioNaoLogado();
+                    funcionario.login(funcionarios);
+                    funcionarios.push(this.funcionario);
+                case 3:
+                    break;
+            }
+        }
     }
+    menuPrincipal () {
+        /*
+        Essa função vai interagir com o usuário e determinar
+        que tipo de ação ele vai fazer, passando assim para 
+        a função da interação propriamente dita.
+        */
+       valido = false;
+       while (!valido) {
+            console.clear();
+            console.log("---------- MENU PRINCIPAL ----------");
+            console.log("1.  Ver meus dados;");
+            console.log("2.  Modificar meus dados;");
+            console.log("3.  Ver lista de clientes;");
+            console.log("4.  Ver lista de pets;");
+            console.log("5.  Ver lista de consultas;");
+            console.log("6.  Ver lista de funcionários;");
+            console.log("7.  Marcar consulta;");
+            console.log("8.  Mudar status de consulta;");
+            console.log("9.  Remover cliente;");
+            console.log("10. Remover pet;");
+            console.log("11. Cancelar consulta;");
+            console.log("12. Remover funcionário;");
+            console.log("13. Fazer logout;\n");
+
+            let opcao = prompt("Insira o número da ação: ");
+
+            opcao = parseInt(opcao);
+
+            if (opcao == NaN || opcao < 1 || opcao > 13) {
+                switch (opcao) {
+                    case 1:
+                        this.mostrarDados();
+                        valido = true;
+                        break;
+                    case 2:
+
+                }
+            }
+        }
+    }
+
+
+
 }
 
 let programa = new Sistema();
