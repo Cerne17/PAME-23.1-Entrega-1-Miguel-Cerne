@@ -144,7 +144,7 @@ class Funcionario {
             }
         }
     }
-    verClientes () {
+    mostrarClientes () {
         console.clear();
         console.log("---------- VER DADOS ----------");
 
@@ -154,7 +154,7 @@ class Funcionario {
             console.log(`${i}. ${clientes[i]}`);
         }
     }
-    verPets () {
+    mostrarPets () {
         //TODO: Função inacabada
         console.clear();
         console.log("---------- VER PETS ----------");
@@ -315,25 +315,28 @@ class Sistema {
         }
         return nomeFuncionario;
     }
-    mostrarConsultas () {
+    mostrarConsultas (funcionario) {
 
     }
-    editarConsultas () {
+    editarConsultas (funcionario) {
 
     }
-    cancelarConsultas() {
+    cancelarConsultas(funcionario) {
 
     }
     mostrarFuncionarios () {
 
     }
-    removerPet () {
+    marcarConsultas (funcionario) {
+
+    }
+    removerPet (funcionario) {
 
     }
     removerFuncionario () {
 
     }
-    logout () {
+    logout (funcionario) {
         
     }
     quit() {
@@ -342,7 +345,7 @@ class Sistema {
     // Função principal do programa
     main () {
         while (true) {
-            
+
             // Quando o sistema é inicializado, devemos primeiro fazer o login/cadastro do usuário no sistema em si
             let acao = programa.menuNaoLogado();
             let funcionarioAtual;
@@ -356,6 +359,63 @@ class Sistema {
                     break;
                 case 3:
                     this.quit();
+            }
+
+            while (true) {
+                // Depois de logado, o sistema entra no laço de repetição principal do programa, onde tem acesso ao menu principal.
+
+                let mainBreak = false; // variavel de controle para sair do laço
+
+                let acao = menuPrincipal();
+
+                switch (acao) {
+                    case 1:
+                        funcionarioAtual.mostrarDados();
+                        break;
+                    case 2:
+                        funcionarioAtual.modificarDados();
+                        break;
+                    case 3:
+                        funcionarioAtual.mostrarClientes();
+                        break;
+                    case 4:
+                        funcionarioAtual.mostrarPets();
+                        break;
+                    case 5:
+                        this.mostrarConsultas(funcionarioAtual);
+                        break;
+                    case 6:
+                        this.mostrarFuncionarios();
+                        break;
+                    case 7:
+                        this.marcarConsultas(funcionarioAtual);
+                        break;
+                    case 8:
+                        this.editarConsultas(funcionarioAtual);
+                        break;
+                    case 9:
+                        funcionarioAtual.removerCliente();
+                        break;
+                    case 10:
+                        this.removerPet(funcionarioAtual);
+                        break;
+                    case 11:
+                        this.cancelarConsultas(funcionarioAtual);
+                        break;
+                    case 12:
+                        this.removerFuncionario(funcionarioAtual);
+                        break;
+                    case 13:
+                        this.logout();
+                        mainBreak = true;
+                        break;
+                }
+
+                // Controle se o funcionario fez logout, para sair do menu 
+                // principal e voltar ao menu de pessoas sem login/cadastro
+                if (mainBreak) {
+                    break;
+                }
             }
         }
     }
