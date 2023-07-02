@@ -155,6 +155,7 @@ class Funcionario {
         }
     }
     verPets () {
+        //TODO: Função inacabada
         console.clear();
         console.log("---------- VER PETS ----------");
 
@@ -164,6 +165,9 @@ class Funcionario {
             console.log(`${i}. ${pets[i]}`);
         }
     }
+    removerCliente() {
+        //TODO: fazer essa função
+    }
 }
 class Sistema {
 
@@ -171,6 +175,9 @@ class Sistema {
         this.funcionarios; // objeto = {"id": id, "nome": nome, "senha": senha, "clientes": {cliente1: [pets]}, "consultas": {}}
         this.consultas; // objeto = {"id": id, "nomeFunc": "nome", "nomeCli": "nome", "nomePet": "nome", "data": [dd,mm,aa], "status": status}
         this.clientes; //  objeto = {"nome": ["nomePet1", "nomePet2", "nomePet3", "nomePet4", ...]}
+
+        // Inicializa todo o programa:
+        this.main();
     }
     menuPrincipal () {
         /*
@@ -311,6 +318,9 @@ class Sistema {
     mostrarConsultas () {
 
     }
+    editarConsultas () {
+
+    }
     cancelarConsultas() {
 
     }
@@ -323,9 +333,33 @@ class Sistema {
     removerFuncionario () {
 
     }
+    logout () {
+        
+    }
+    quit() {
+        process.exit();
+    }
+    // Função principal do programa
+    main () {
+        while (true) {
+            
+            // Quando o sistema é inicializado, devemos primeiro fazer o login/cadastro do usuário no sistema em si
+            let acao = programa.menuNaoLogado();
+            let funcionarioAtual;
+
+            switch (acao) {
+                case 1:
+                    funcionarioAtual = programa.cadastro();
+                    break;
+                case 2:
+                    funcionarioAtual = programa.login();
+                    break;
+                case 3:
+                    this.quit();
+            }
+        }
+    }
 }
-// TODO: Função problemática, não faz o que deveria fazer, debugar depois.
-// Função auxiliar para formatação de entradas inválidas:
 function invalido (mensagem="") {
     console.clear();
     if (mensagem === "") {
@@ -333,28 +367,14 @@ function invalido (mensagem="") {
     } else {
         console.log(mensagem);
     }
-    setTimeout(function () {
-        console.clear();
-    }, 1500);
+    // Contas para dar tempo do usuário ler a informação
+    // antes de ser deletada (tentei usar setTimeout, mas não obtive sucesso)
+    for (let i=0; i < (10**6); i++) {
+        for (let j=0; j < (10**4); j++) {
+            let k = i**j;
+        }
+    }
+    console.clear(); 
 }
 
 let programa = new Sistema();
-
-//LAÇO PRINCIPAL DO PROGRAMA
-while (true) {
-    
-    // Quando o sistema é inicializado, devemos primeiro fazer o login/cadastro do usuário no sistema em si
-    let acao = programa.menuNaoLogado();
-    let funcionarioAtual;
-
-    switch (acao) {
-        case 1:
-            funcionarioAtual = programa.cadastro();
-            break;
-        case 2:
-            funcionarioAtual = programa.login();
-            break;
-        case 3:
-            process.exit();
-    }
-}
