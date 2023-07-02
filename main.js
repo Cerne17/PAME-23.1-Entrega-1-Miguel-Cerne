@@ -54,7 +54,7 @@ class Animal {
         nome: 'nome',
         dono: 'dono',
         funcionario: 'nomeFuncionario', (nome do médico)
-        consultas: ['consulta1', 'consulta2']
+        consultas: numeroDeConsultas
     }
     */
     #id;
@@ -74,7 +74,7 @@ class Consulta {
             nomeCliente: 'nome',
             nomePet: 'nome',
             nomeFuncionario: 'nome',
-            data: [dia, mes, ano],
+            data: [hora, dia, mes],
             status: 'status'
         }
     */
@@ -92,7 +92,13 @@ class Consulta {
 
 class Funcionario {
     /*
-    Essa é a estrutura básica de um funcionário, usada em ambos, funcionários logados e funcionários não logados.
+    funcionario = {
+        id: id,
+        nome: 'nome',
+        senha: 'senha'
+        clientes: [cliente1, cliente2, cliente3,...],
+
+    }
     */
 
     #id;
@@ -102,10 +108,21 @@ class Funcionario {
         this.#id             = uuidv4();
         this.nomeFuncionario = nomeFuncionarioC;
         this.#senha          = senhaC;
-        this.clientes        = {};
-        this.pets            = Object.values(this.clientes).sort();
+        this.clientes        = [];
+        this.pets            = [];
         this.consultas       = {};
+        let quantidadeClientes = this.clientes.length;
+        let nomeClientes       = Object.keys(this.clientes);
+        for (let i = 0; i < quantidadeClientes; i++) {
+            let petsAtuais = [];
+            petsAtuais.push(clientes[i].pets);
+            let quantidadeAtual = petsAtuais.length;
+            for (let j = 0; j < quantidadeAtual; j++) {
+                this.pets.push(petsAtuais[j]);
+            }
+        }
     }
+
     mostrarDados () {
 
         console.log("---------- MOSTRAR DADOS ----------");
@@ -114,6 +131,7 @@ class Funcionario {
         console.log(`Nome:     ${this.nomeFuncionario}`);
         console.log(`Senha:    ${this.#senha}`);
     }
+
     get id () {
         return this.id;
     }
@@ -172,9 +190,9 @@ class Funcionario {
 class Sistema {
 
     constructor () {
-        this.funcionarios; // objeto = {"id": id, "nome": nome, "senha": senha, "clientes": {cliente1: [pets]}, "consultas": {}}
-        this.consultas; // objeto = {"id": id, "nomeFunc": "nome", "nomeCli": "nome", "nomePet": "nome", "data": [dd,mm,aa], "status": status}
-        this.clientes; //  objeto = {"nome": ["nomePet1", "nomePet2", "nomePet3", "nomePet4", ...]}
+        this.funcionarios = {}; // objeto = {"id": id, "nome": nome, "senha": senha, "clientes": {cliente1: [pets]}, "consultas": {}}
+        this.consultas    = {}; // objeto = {"id": id, "nomeFunc": "nome", "nomeCli": "nome", "nomePet": "nome", "data": [dd,mm,aa], "status": status}
+        this.clientes     = {}; //  objeto = {"nome": ["nomePet1", "nomePet2", "nomePet3", "nomePet4", ...]}
 
         // Inicializa todo o programa:
         this.main();
@@ -185,6 +203,8 @@ class Sistema {
         que tipo de ação ele vai fazer, passando assim para 
         a função da interação propriamente dita.
         */
+        let opcao
+
        while (true) {
             console.clear();
             console.log("---------- MENU PRINCIPAL ----------");
@@ -202,23 +222,24 @@ class Sistema {
             console.log("12. Remover funcionário;");
             console.log("13. Fazer logout;\n");
 
-            let opcao = prompt("Insira o número da ação: ");
+            opcao = prompt("Insira o número da ação: ");
 
             opcao = parseInt(opcao);
 
-            if (opcao == NaN || opcao < 1 || opcao > 13) {
+            if (opcao == NaN || opcao <= 0 || opcao > 13) {
                 invalido();
             } else {
                 break;
             }
-            return opcao;
         }
+        return opcao;
     }
     menuNaoLogado () {
         /*
         Primeira interação com o usuário. Retorna a opção a ser realizada:
         cadastro ou login.
         */
+       let opcao;
         while (true) {
             console.clear();
             console.log("---------- MENU INICIAL ----------");
@@ -226,7 +247,7 @@ class Sistema {
             console.log("2. Login");
             console.log("3. Sair");
 
-            let opcao = prompt("Insira a opção desejada: ");
+            opcao = prompt("Insira a opção desejada: ");
             opcao = parseInt(opcao);
 
             if (opcao == NaN || opcao > 3 || opcao < 1) {
@@ -234,21 +255,27 @@ class Sistema {
             } else {
                 break;
             }
-            return opcao;
         }
+        return opcao;
     }
     cadastro () {
         /*
         Realiza o cadastro de um novo funcionário, instancia esse novo
         objeto e, por fim, retorna seu nome.
         */
+
+       let nomeFuncionario;
+       let senhaFuncionario;
+       
+
+       let titulo = "---------- CADASTRO ----------";
         console.clear();
-        console.log("---------- CADASTRO ----------");
-        let nomeFuncionario = prompt("Insira o seu nome: ");
+        console.log(titulo);
+        nomeFuncionario = prompt("Insira o seu nome: ");
         while (true) {
             console.clear();
-            console.log("---------- CADASTRO ----------");
-            let senhaFuncionario = prompt("Insira a sua senha: ");
+            console.log(titulo);
+            senhaFuncionario = prompt("Insira a sua senha: ");
             let confirmacao = prompt("Confirme sua senha: ");
             if (senhaFuncionario == confirmacao) {
                 break;
@@ -257,6 +284,7 @@ class Sistema {
             }
         }
         let funcionarioAtual = new Funcionario(nomeFuncionario, senhaFuncionario);
+
         this.funcionarios[nomeFuncionario.toLowerCase()] = funcionarioAtual;
         return funcionarioAtual;
     }
@@ -295,7 +323,7 @@ class Sistema {
         }
 
         // Checagem de se a senha inserida é a mesma do usuário
-        let senhaCerta = this.funcionarios.nomeFuncionario.senha;
+        let senhaCerta = this.funcionarios[nomeFuncionario].senha;
 
         while (true) {
             console.clear();
@@ -328,6 +356,49 @@ class Sistema {
 
     }
     marcarConsultas (funcionario) {
+        
+        let titulo = "---------- MARCAR CONSULTA ----------";
+        let remarcar = false;
+        let datasOcupadas = Objectfuncionario.consultas.data
+
+        // Loop para criar a data
+        while (true) {
+            console.clear();
+            console.log(titulo);
+            
+            console.log("Digite a hora da consulta: (Somente a hora, sem minutos)");
+            let hora = prompt(" ~ ");
+            console.log("Digite o dia da consulta: ");
+            let dia = prompt(" ~ ");
+            console.log("Digite o mês da consulta: (1-12)");
+            let mes = prompt(" ~ ");
+
+            let data = [hora, dia, mes];
+
+            if (funcionario.consultas == {}) {
+                break
+            } else if (funcionario.consultas.includes(data)) {
+                
+                console.clear();
+                console.log(titulo);
+                console.log("Já existe uma consulta nesse horário. Remarcar? (s/n)");
+                let opcao = prompt(" ~ ");
+
+                if (opcao == s) {
+                    remarcar = true;
+                    break
+                } else {
+                    invalido("Voltando para marcar nova data.")
+                }
+            }   
+        }
+        if (remarcar === true) {
+            console.clear();
+            console.log(titulo);
+            console.log("Para quando deseja remarcar")
+        }
+
+        // Loop
 
     }
     removerPet (funcionario) {
@@ -347,15 +418,17 @@ class Sistema {
         while (true) {
 
             // Quando o sistema é inicializado, devemos primeiro fazer o login/cadastro do usuário no sistema em si
-            let acao = programa.menuNaoLogado();
-            let funcionarioAtual;
+            let acao = this.menuNaoLogado();
+            let funcionarioAtual = -1;
 
             switch (acao) {
                 case 1:
-                    funcionarioAtual = programa.cadastro();
+                    funcionarioAtual = this.cadastro();
                     break;
                 case 2:
-                    funcionarioAtual = programa.login();
+                    while (funcionarioAtual == -1) {
+                        funcionarioAtual = this.login();
+                    }
                     break;
                 case 3:
                     this.quit();
@@ -366,7 +439,7 @@ class Sistema {
 
                 let mainBreak = false; // variavel de controle para sair do laço
 
-                let acao = menuPrincipal();
+                let acao = this.menuPrincipal();
 
                 switch (acao) {
                     case 1:
