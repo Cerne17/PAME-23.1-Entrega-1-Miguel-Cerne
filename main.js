@@ -2,15 +2,10 @@
 "use strict";
 
 /* ----------------- Importação de módulos ----------------- */
-
 // Possibilita a interação com usuário pelo prompt de comando
-const prompt = require("prompt-sync")({sigint : true});
-// Usado para a criação de identificadores únicos (outra opção seria a utilização do comando Date.now() para gerar id's, no entando, esses id's não seriam aleatórios, o que poderia vir a ser um problema de segurança)
-const { v4 : uuidv4 } = require('uuid');
+const prompt = require("prompt-sync")({sigint : true}); // interação com usuário no prompt
 
-/* UTILIZAÇÃO : uniqueId = uuidv4(); */
-
-/* --------------------------------------------------------- */
+const { v4 : uuidv4 } = require('uuid'); // usado para criar os id's. Outra opção seria usar Date.now(), mas não teria um id aleatório (podendo se tornar um problema de segurança)
 
 /*
 
@@ -35,20 +30,22 @@ class Cliente {
             pets: ['pet1', 'pet2'],
             fidelizado: true or false
         }
-    */    
+    */
+
     #id;
 
-    constructor (idC, nomeClienteC, petsC, fidelizadoC) {
-        this.#id               = idC;
+    constructor (nomeClienteC, petsC, fidelizadoC) {
+        this.#id               = uuidv4();
         this.nomeCliente       = nomeClienteC;
         this.pets              = petsC;
         this.fidelizado        = fidelizadoC;
     }
-
-    get cliente () {
-
+    mostrarPets () {
+        let quantidade = pets.length;
+        for (let i = 1; i <= quantidade; i++) {
+            console.log(`${i}. ${pets[i]}`);
+        }
     }
-
 }
 class Animal {
     /*
@@ -56,13 +53,14 @@ class Animal {
         id: identifier,
         nome: 'nome',
         dono: 'dono',
+        funcionario: 'nomeFuncionario', (nome do médico)
         consultas: ['consulta1', 'consulta2']
     }
     */
     #id;
 
-    constructor (idC, nomePetC, donoC, consultasC) {
-        this.#id       = idC;
+    constructor (nomePetC, donoC, consultasC) {
+        this.#id       = uuidv4();
         this.nomePet   = nomePetC;
         this.donoC     = donoC;
         this.consultas = consultasC;
@@ -76,19 +74,19 @@ class Consulta {
             nomeCliente: 'nome',
             nomePet: 'nome',
             nomeFuncionario: 'nome',
-            status: 'status',
-            data: [dia, mes, ano] 
+            data: [dia, mes, ano],
+            status: 'status'
         }
     */
     #id;
 
-    constructor (idC, nomeClienteC, nomePetC, nomeFuncionarioC, statusC, dataC) {
-        this.#id             = idC;
-        this.nomeCliente     = nomeClienteC;
-        this.nomePet         = nomePetC;
+    constructor (nomeClienteC, nomePetsC, nomeFuncionarioC, statusC, dataC) {
+        this.#id             = uuidv4();
         this.nomeFuncionario = nomeFuncionarioC;
-        this.status          = statusC;
+        this.nomeCliente     = nomeClienteC;
+        this.nomePets        = nomePetsC;
         this.data            = dataC;
+        this.status          = statusC;
     }
 }
 
@@ -100,24 +98,21 @@ class Funcionario {
     #id;
     #senha;
 
-    constructor (idC, nomeFuncionarioC, senhaC) {
-        this.#id             = idC;
+    constructor (nomeFuncionarioC, senhaC) {
+        this.#id             = uuidv4();
         this.nomeFuncionario = nomeFuncionarioC;
         this.#senha          = senhaC;
-        this.clientes        = "";
-        this.consultas       
+        this.clientes        = {};
+        this.pets            = Object.values(this.clientes).sort();
+        this.consultas       = {};
     }
     mostrarDados () {
 
         console.log("---------- MOSTRAR DADOS ----------");
-        // Funcionario = {id: identification, nome: "Nome", senha: "senha", clientes: {"nome": ["pet1", "pet2", ...]}}
-        let clientes = this.clientes.keys();
-        let pets     = this.clientes.values();
+        // Funcionario = {id: identification, nome: "Nome", senha: "senha", clientes: {"nome": ["pet1", "pet2", ...]}, consultas: {}}
 
         console.log(`Nome:     ${this.nomeFuncionario}`);
         console.log(`Senha:    ${this.#senha}`);
-        console.log(`Clientes: ${clientes}`);
-        console.log(`Animais:  ${pets}`);
     }
     get id () {
         return this.id;
@@ -153,7 +148,7 @@ class Funcionario {
         console.clear();
         console.log("---------- VER DADOS ----------");
 
-        let clientes = this.clientes.keys();
+        let clientes = Object.keys(this.clientes).sort();
         let quantidade = clientes.length;
         for (let i = 1; i <= quantidade; i++) {
             console.log(`${i}. ${clientes[i]}`);
@@ -169,108 +164,13 @@ class Funcionario {
             console.log(`${i}. ${pets[i]}`);
         }
     }
-    verConsultas () {
-
-    }
-    mudarStatusConsulta () {
-
-    }
 }
-
-class FuncionarioNaoLogado {
-    /*
-    Métodos: 
-        login, 
-        cadastro, 
-        sair
-    */
-
-    #id;
-
-   constructor () {
-        this.#id             = "";
-        this.nomeFuncionario = "";
-        this.senha           = "";
-   }
-   login (funcionarios) {
-        console.clear();
-        console.log("---------- LOGIN ----------");
-        this.nomeFuncionario = prompt("Insira seu nome: ");
-        this.senha           = prompt("Insira sua senha: ");
-        
-    }
-   cadastro () {
-        console.clear();
-        console.log("---------- CADASTRO ----------");
-        this.nomeFuncionario = prompt("Insira seu nome: ");
-        this.senha          = prompt("Insira sua senha: ");
-
-        this.#id = uuidv4(); // Criação do id unico e aleatório
-
-        return new [this.#id, this.nomeFuncionario, this.senha];
-    }
-}
-
-class FuncionarioLogado extends Funcionario {
-    /*
-    Métodos:
-        verDados,
-        modificarDados,
-        verClientes (em ordem alfabética),
-        verPets (com os donos e em ordem alfabética hash?),
-        verConsultas (ordem cronológica),
-        verFuncionarios (em ordem alfabética e não mostrar senhas),
-        marcarConsulta (caso exista, remarcar),
-        mudarStatusConsulta (pendente, adiada, realizada, cancelada),
-        removerCliente (ao remover um cliente, seus pets também devem ser excluídos do sistema),
-        cancelarConsulta,
-        removerFuncionario (não deve ser possível remover um funcionário que tenha consultas agendadas),
-        logout
-    */
-}
-
 class Sistema {
 
-    funcionarios = [];
-    #id;
-
     constructor () {
-
-        this.funcionario; // objeto de funcionario
-
-
-        valido = false;
-        while (!valido) {
-
-            // Inicialização do sistema, começa perguntando o que o funcionário gostaria de fazer.
-            console.log("MENU:");
-            console.log("1. Cadastro\n2. Logar\n3. Sair");
-            
-            let opcao = prompt("Digite a opção: ");
-            opcao = parseInt(opcao);
-            
-            if (opcao == NaN || opcao > 3 || opcao < 0) {
-                
-                console.log("Entrada inválida, tente novamente.");
-                console.clear();
-
-            } else {
-                valido = true;
-                console.clear();
-            }
-
-            switch (opcao) {
-                case 1:
-                    this.funcionario = new FuncionarioNaoLogado();
-                    funcionarios.push(funcionario.cadastro());
-                case 2:
-                    this.funcionario = new FuncionarioNaoLogado();
-                    funcionario.login(funcionarios);
-                    funcionarios.push(this.funcionario);
-                case 3:
-                    break;
-            }
-        }
+        this.funcionarios; // objeto = {"id": id, "nome": nome, "senha": senha, "clientes": {cliente1: [pets]}, "consultas": {}}
+        this.consultas; // objeto = {"id": id, "nomeFunc": "nome", "nomeCli": "nome", "nomePet": "nome", "data": [dd,mm,aa], "status": status}
+        this.clientes; //  objeto = {"nome": ["nomePet1", "nomePet2", "nomePet3", "nomePet4", ...]}
     }
     menuPrincipal () {
         /*
@@ -278,8 +178,7 @@ class Sistema {
         que tipo de ação ele vai fazer, passando assim para 
         a função da interação propriamente dita.
         */
-       valido = false;
-       while (!valido) {
+       while (true) {
             console.clear();
             console.log("---------- MENU PRINCIPAL ----------");
             console.log("1.  Ver meus dados;");
@@ -301,20 +200,161 @@ class Sistema {
             opcao = parseInt(opcao);
 
             if (opcao == NaN || opcao < 1 || opcao > 13) {
-                switch (opcao) {
-                    case 1:
-                        this.mostrarDados();
-                        valido = true;
-                        break;
-                    case 2:
+                invalido();
+            } else {
+                break;
+            }
+            return opcao;
+        }
+    }
+    menuNaoLogado () {
+        /*
+        Primeira interação com o usuário. Retorna a opção a ser realizada:
+        cadastro ou login.
+        */
+        while (true) {
+            console.clear();
+            console.log("---------- MENU INICIAL ----------");
+            console.log("1. Cadastro");
+            console.log("2. Login");
+            console.log("3. Sair");
 
+            let opcao = prompt("Insira a opção desejada: ");
+            opcao = parseInt(opcao);
+
+            if (opcao == NaN || opcao > 3 || opcao < 1) {
+                invalido();
+            } else {
+                break;
+            }
+            return opcao;
+        }
+    }
+    cadastro () {
+        /*
+        Realiza o cadastro de um novo funcionário, instancia esse novo
+        objeto e, por fim, retorna seu nome.
+        */
+        console.clear();
+        console.log("---------- CADASTRO ----------");
+        let nomeFuncionario = prompt("Insira o seu nome: ");
+        while (true) {
+            console.clear();
+            console.log("---------- CADASTRO ----------");
+            let senhaFuncionario = prompt("Insira a sua senha: ");
+            let confirmacao = prompt("Confirme sua senha: ");
+            if (senhaFuncionario == confirmacao) {
+                break;
+            } else {
+                invalido("As senhas não conferem, tente novamente...");
+            }
+        }
+        let funcionarioAtual = new Funcionario(nomeFuncionario, senhaFuncionario);
+        this.funcionarios[nomeFuncionario.toLowerCase()] = funcionarioAtual;
+        return funcionarioAtual;
+    }
+    login () {
+        /*
+        Realiza o procedimento de login, procura pelo nome do funcionário
+        no objeto de funcionários, onde as chaves são os nomes dos mesmos.
+        */
+       let nomeFuncionario;
+       let senhaFuncionario;
+       let nomeFuncionariosAtuais = Object.keys(this.funcionarios);
+       while (true) {
+
+            console.clear();
+            console.log("---------- LOGIN ----------");
+            nomeFuncionario = prompt("Insira seu nome: ");
+            let opcao = prompt(`Seu nome é ${nomeFuncionario}? (s/n)`);
+            if (opcao == "s") {
+                break;
+            } else if (opcao == "n") {
+                // Nada acontece
+            } else {
+                invalido();
+                continue;
+            }
+            nomeFuncionario = nomeFuncionario.toLowerCase();
+            if (!nomeFuncionariosAtuais.includes(nomeFuncionario)) {
+                invalido("Este usuário não está cadastrado, tente novamente, ou realize o cadastro.");
+                console.log("---------- LOGIN ----------");
+                console.log("Gostaria de continuar procedimento de login ou sair para cadastro?");
+                let opcao = prompt("(1. login/2. cadastro)\n");
+                if (opcao == "2") {
+                    return -1; // Retorna -1 em caso de erro.
                 }
             }
         }
+
+        // Checagem de se a senha inserida é a mesma do usuário
+        let senhaCerta = this.funcionarios.nomeFuncionario.senha;
+
+        while (true) {
+            console.clear();
+            console.log("---------- LOGIN ----------");
+            senhaFuncionario = prompt("Insira a senha: ");
+
+            let confirmacao = prompt("Confirme a senha: ");
+            if (senhaFuncionario == confirmacao && senhaFuncionario == senhaCerta) {
+                break;
+            } else if (senhaFuncionario != confirmacao) {
+                invalido("As senhas não conferem, tente novamente.")
+            } else if (senhaFuncionario == confirmacao && !(senhaFuncionario == senhaCerta)){
+                invalido("As senhas conferem, mas estão erradas. Tente novamente.");
+            } else {
+                invalido()
+            }
+        }
+        return nomeFuncionario;
     }
+    mostrarConsultas () {
 
+    }
+    cancelarConsultas() {
 
+    }
+    mostrarFuncionarios () {
 
+    }
+    removerPet () {
+
+    }
+    removerFuncionario () {
+
+    }
+}
+// TODO: Função problemática, não faz o que deveria fazer, debugar depois.
+// Função auxiliar para formatação de entradas inválidas:
+function invalido (mensagem="") {
+    console.clear();
+    if (mensagem === "") {
+        console.log("Entrada inválida, tente novamente...");
+    } else {
+        console.log(mensagem);
+    }
+    setTimeout(function () {
+        console.clear();
+    }, 1500);
 }
 
 let programa = new Sistema();
+
+//LAÇO PRINCIPAL DO PROGRAMA
+while (true) {
+    
+    // Quando o sistema é inicializado, devemos primeiro fazer o login/cadastro do usuário no sistema em si
+    let acao = programa.menuNaoLogado();
+    let funcionarioAtual;
+
+    switch (acao) {
+        case 1:
+            funcionarioAtual = programa.cadastro();
+            break;
+        case 2:
+            funcionarioAtual = programa.login();
+            break;
+        case 3:
+            process.exit();
+    }
+}
