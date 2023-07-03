@@ -80,6 +80,44 @@ class Cliente {
         console.log(titulo);
         console.log(`${nome} adicionado à lista de pets de ${this.nomeCliente}`);
     }
+    
+    removerPet () {
+        let titulo = "---------- REMOVER PET ----------";
+        console.clear();
+        console.log(titulo);
+
+        let quantidade = this.pets.length;
+        for (let i = 0; i < quantidade; i++) {
+            console.log(`${i+1}. ${this.pets[i]};`);
+        }
+        console.log("Insira o indice do pet a ser removido: ");
+        let indice = prompt("~ ") 
+            
+        indice = parseInt(indice);
+
+        if (indice == NaN || indice < 1 || indice > this.pets.length) {
+            invalido();
+        } else {
+            indice--;
+            
+            console.clear();
+            console.log(titulo);
+
+            console.log(`Deseja mesmo remover ${this.pets[indice]}? (s/n)`);
+            let confirmacao = prompt("~ ");
+
+            if (confirmacao == "s") {
+                this.pets.splice(indice, 1);
+            } else if (confirmacao == "n") {
+                console.clear();
+                console.log(titulo);
+                console.log("Cancelando remoção...")
+            } 
+            else {
+                invalido("Entrada inválida, tente novamente");
+            }
+        }
+    }
 }
 class Animal {
     /*
@@ -166,10 +204,6 @@ class Funcionario {
         console.log(`Senha:    ${this.senha}`);
 
         prompt("~ Insira qualquer tecla para continuar...");
-    }
-
-    get id () {
-        return this.id;
     }
 
     modificarDados () {
@@ -333,7 +367,12 @@ class Funcionario {
                     let cliente = this.clientes[indice];
                     cliente.adicionarPet();
                     this.clientes[indice] = cliente;
-                } else {
+                } else if (confirmacao == "n") {
+                    console.clear();
+                    console.log(titulo);
+                    console.log("Cancelando adição...")
+                } 
+                else {
                     invalido("Entrada inválida, tente novamente");
                     continue;
                 }
@@ -342,6 +381,68 @@ class Funcionario {
             console.log(titulo);
 
             console.log("Deseja adicionar mais algum pet? (s/n)");
+            let opcao = prompt("~ ");
+
+            if (opcao == "s") {
+                //NADA
+            } else {
+                break;
+            }
+        }
+        return clientes[this.nomeFuncionario] = this.clientes;
+    }
+    removerPet (clientes) {
+        let titulo = "---------- REMOVER PET ----------";
+        while (true) {
+            console.clear();
+            console.log(titulo);
+
+            let quantidade = this.clientes.length;
+            let nomesClientes = [];
+
+            for (let i = 0; i < quantidade; i++) {
+                let clienteAtual = this.clientes[i];
+                let nomeClienteAtual = clienteAtual.nomeCliente;
+                nomesClientes.push(nomeClienteAtual);
+
+                console.log(`${i+1}. ${capitalize(nomeClienteAtual)}`);
+            }
+
+            console.log("Insira o índice do cliente para ser remover o pet: ");
+            let indice = prompt("~ ");
+            
+            indice = parseInt(indice);
+
+            if (indice == NaN || indice < 1 || indice > nomesClientes.length) {
+                invalido();
+                continue;
+            } else {
+                indice--;
+                
+                console.clear();
+                console.log(titulo);
+
+                console.log(`Deseja mesmo remover um pet de ${nomesClientes[indice]}? (s/n)`);
+                let confirmacao = prompt("~ ");
+
+                if (confirmacao == "s") {
+                    let cliente = this.clientes[indice];
+                    cliente.removerPet();
+                    this.clientes[indice] = cliente;
+                } else if (confirmacao == "n") {
+                    console.clear();
+                    console.log(titulo);
+                    console.log("Cancelando remoção...");
+                }
+                else {
+                    invalido("Entrada inválida, tente novamente");
+                    continue;
+                }
+            }
+            console.clear();
+            console.log(titulo);
+
+            console.log("Deseja remover mais algum pet? (s/n)");
             let opcao = prompt("~ ");
 
             if (opcao == "s") {
@@ -634,25 +735,8 @@ class Sistema {
             console.log("Para quando deseja remarcar")
         }
 
-        // Loop
-
     }
-    // adicionarPet(funcionario) {
-    //     /*
-    //     Essa função interage com o usuário para selecionar o cliente
-    //     em seguida chama a função de mesmo nome da classe Cliente e adiciona o pet.
-    //     */
-    //    let titulo = "---------- ADICIONAR PET ----------";
 
-    //    console.clear();
-    //    console.log(titulo);
-
-    //    // Usar função mostrar clientes.
-
-    // }
-    // removerPet (funcionario) {
-
-    // }
     //TODO: BUG Mesmo quando o funcionario não tem consultas, ele acusa que tem
     removerFuncionario () {
         while (true){
@@ -767,7 +851,7 @@ class Sistema {
                         this.clientes = funcionarioAtual.removerCliente(this.clientes);
                         break;
                     case 10:
-                        this.removerPet(funcionarioAtual);
+                        this.clientes = funcionarioAtual.removerPet(this.clientes);
                         break;
                     case 11:
                         this.cancelarConsultas(funcionarioAtual);

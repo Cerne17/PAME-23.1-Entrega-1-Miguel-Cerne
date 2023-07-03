@@ -149,11 +149,9 @@ SISTEMA:
             remove algum funcionario escolhido, caso o mesmo
             nao tenha nenhuma consulta a ser feita (adiada
             ou pendente)
-        k. logout
-            sai da conta atualmente conectada
-        l. quit
+        k. quit
             função para encerrar o programa
-        m. main
+        l. main
             laço principal do aplicativo, une todas anteriores
 
 -----------------------------------------------
@@ -199,5 +197,18 @@ MELHORIAS:
         para executar a próxima parte, então forcei cálculos
         para causar o efeito da função 'time.sleep' do python.
         Uma possível saída seria a utilização de Promises.
+
+    5. Subdividir mais o código:
+        O código está todo concentrado em apenas um arquivo,
+        o que geralmente causa problemas no futuro por falta de
+        organização ou contradições lógicas ao implementar
+        novas features.
+
+    6. Refatorar o código:
+        Como no caso da herança, programando o projeto, eu pude
+        ver que muitas vezes eu repeti pedaços de códigos em
+        funções análogas. Provavelmente, seria uma boa
+        prática separar esses códigos e criar funções separadas
+        para elas.
  
 -----------------------------------------------
