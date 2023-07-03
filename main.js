@@ -37,14 +37,21 @@ class Cliente {
     constructor (nomeClienteC, petsC) {
         this.#id               = uuidv4();
         this.nomeCliente       = nomeClienteC; // string
-        this.pets              = petsC; // array de strings
+        this.pets              = petsC; // array de objetos, chave: nome, valor: objeto
         this.fidelizado        = false;
     }
     
     // Função usada no código para mostrar clientes com seus animais em Funcionario
     mostrarPetsLinha () {
-        let pets = this.pets
-        let quantidade = pets.length;
+
+        let pets = [];
+
+        let quantidade = this.pets.length;
+        for (let i = 0; i < quantidade; i++) {
+            pets.push(this.pets[i].nomePet);
+        }
+
+        quantidade = pets.length;
 
         for (let i = 0; i < quantidade; i++) {
             pets[i] = capitalize(pets[i]);
@@ -70,12 +77,12 @@ class Cliente {
         text = `${this.nomeCliente} : ${text}`;
         return text;
     }
-    adicionarPet () {
+    adicionarPet (nomeDono) {
         let titulo = "---------- ADICIONAR PET ----------";
         console.clear();
         console.log(titulo);
         let nome = prompt("Insira o nome do pet: ");
-        this.pets.push(nome);
+        this.pets[nomeDono] = new Animal(nome, nomeDono);
         console.clear();
         console.log(titulo);
         console.log(`${nome} adicionado à lista de pets de ${this.nomeCliente}`);
@@ -131,11 +138,11 @@ class Animal {
     */
     #id;
 
-    constructor (nomePetC, donoC, consultasC) {
+    constructor (nomePetC, donoC) {
         this.#id       = uuidv4();
         this.nomePet   = nomePetC;
         this.donoC     = donoC;
-        this.consultas = consultasC;
+        this.consultas = 0;
     }
 }
 
@@ -179,8 +186,9 @@ class Funcionario {
     constructor (nomeFuncionarioC, senhaC) {
         this.#id             = uuidv4();
         this.nomeFuncionario = nomeFuncionarioC;
-        this.senha          = senhaC;
+        this.senha           = senhaC;
         this.clientes        = [];
+        this.pets            = {};
         this.consultas       = {};
         let quantidadeClientes = this.clientes.length;
         let nomeClientes       = Object.keys(this.clientes);
@@ -206,15 +214,15 @@ class Funcionario {
         prompt("~ Insira qualquer tecla para continuar...");
     }
 
-    modificarDados () {
-        
+    modificarDados (funcionarios) {
+
         let valido = false;
         while (!valido) {
             console.clear();
             console.log("---------- MODIFICAR DADOS ----------");
             console.log("Que dados modificar? (1. Nome; 2. Senha)");
             
-            let info = prompt(" ~ ");
+            let info = prompt("~ ");
             info = parseInt(info);
 
             if (info == NaN || info < 1 || info > 2) {
@@ -223,7 +231,13 @@ class Funcionario {
 
             } else if (info == 1) {
                 let novoNome = prompt("Insira o novo nome: ");
+                let nomeAntigo = this.nomeFuncionario;
                 this.nomeFuncionario = novoNome;
+                funcionarios[nomeAntigo].nomeFuncionario = novoNome;
+                let conteudo = funcionarios[nomeAntigo];
+
+                delete funcionarios[nomeAntigo];
+                funcionarios[novoNome] = conteudo;
                 valido = true;
 
             } else if (info == 2) {
@@ -232,6 +246,7 @@ class Funcionario {
                 valido = true;
             }
         }
+        return funcionarios;
     }
 
     mostrarClientes () {
@@ -247,7 +262,14 @@ class Funcionario {
         for (let i = 0; i < quantidade; i++) {
             
             let clienteAtual = this.clientes[i];
-            let petsAtuais = clienteAtual.pets;
+            
+            let petsAtuais = [];
+
+            let quantidadePets = clienteAtual.pets.length;
+            for (let j = 0; j < quantidadePets; j++) {
+                petsAtuais.push(clienteAtual.pets[j].nomePet)
+            }
+
             let nomeClienteAtual = `${capitalize(clienteAtual.nomeCliente)} : `;
 
             for (let j = 0; j < petsAtuais.length; j++) {
@@ -277,7 +299,7 @@ class Funcionario {
 
         console.log(titulo);
 
-        let quantidadeClientes = Object.keys(clientes).length; 
+        let quantidadeClientes = Object.keys(this.clientes).length; 
         for (let i = 0; i < quantidadeClientes; i++) {
             let clienteAtual = this.clientes[i];
             console.log(clienteAtual.mostrarPets());
@@ -298,7 +320,9 @@ class Funcionario {
             while (true) {
                 let pet = prompt("Insira o nome do pet deste cliente: ");
 
-                pets.push(pet);
+                let novoPet = new Animal (pet,nome);
+
+                pets.push(novoPet);
 
                 console.clear();
                 console.log(titulo);
@@ -312,8 +336,14 @@ class Funcionario {
             }
 
             // Instanciando um novo cliente e adicionando ele ao dicionario de novos clientes
+
             let clienteAtual = new Cliente(nome, pets);
+
             this.clientes.push(clienteAtual);
+
+            for (let i =0; i<pets.length; i++) {
+                this.pets[pets[i].nomePet] = pets[i];
+            }
 
             console.clear();
             console.log(titulo);
@@ -329,21 +359,22 @@ class Funcionario {
         clientes[this.nomeFuncionario] = this.clientes;
         return clientes;
     }
+    //TODO: CHECAR
     adicionarPet (clientes) {
         let titulo = "---------- ADICIONAR PET ----------";
         while (true) {
             console.clear();
             console.log(titulo);
 
-            let quantidade = this.clientes.length;
-            let nomesClientes = [];
+            let quantidade = Object.keys(this.pets).length;
+            let nomesPets = [];
 
             for (let i = 0; i < quantidade; i++) {
-                let clienteAtual = this.clientes[i];
-                let nomeClienteAtual = clienteAtual.nomeCliente;
-                nomesClientes.push(nomeClienteAtual);
+                let petAtual = this.pets.keys[i];
+                let nomePetAtual = petAtual.nomeCliente;
+                nomesPets.push(nomePetAtual);
 
-                console.log(`${i+1}. ${capitalize(nomeClienteAtual)}`);
+                console.log(`${i+1}. ${capitalize(nomePetAtual)}`);
             }
 
             console.log("Insira o índice do cliente para adicionar um pet: ");
@@ -351,7 +382,7 @@ class Funcionario {
             
             indice = parseInt(indice);
 
-            if (indice == NaN || indice < 1 || indice > nomesClientes.length) {
+            if (indice == NaN || indice < 1 || indice > nomesPets.length) {
                 invalido();
                 continue;
             } else {
@@ -365,7 +396,7 @@ class Funcionario {
 
                 if (confirmacao == "s") {
                     let cliente = this.clientes[indice];
-                    cliente.adicionarPet();
+                    cliente.adicionarPet(this.nomeCliente);
                     this.clientes[indice] = cliente;
                 } else if (confirmacao == "n") {
                     console.clear();
@@ -826,7 +857,7 @@ class Sistema {
                         funcionarioAtual.mostrarDados();
                         break;
                     case 2:
-                        funcionarioAtual.modificarDados();
+                        this.funcionarios = funcionarioAtual.modificarDados(this.funcionarios);
                         break;
                     case 3:
                         funcionarioAtual.mostrarClientes();
