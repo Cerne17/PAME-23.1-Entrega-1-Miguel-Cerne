@@ -188,7 +188,7 @@ class Funcionario {
         this.senha           = senhaC;
         this.clientes        = [];
         this.pets            = {};
-        this.consultas       = {};
+        this.consultas       = {}; // data ("mmddhh"): {consulta}
         let quantidadeClientes = this.clientes.length;
         let nomeClientes       = Object.keys(this.clientes);
         for (let i = 0; i < quantidadeClientes; i++) {
@@ -550,6 +550,188 @@ class Funcionario {
         }
         return clientes[this.nomeFuncionario] = this.clientes;
     }
+
+    /* Consultas */
+    mostrarConsultas () {
+        let titulo = "---------- MOSTRAR CONSULTAS ----------";
+        console.clear();
+        console.log(titulo);
+
+        let datas = Object.keys(this.consultas);
+        let consultas = Object.values(this.consultas);
+
+        // Ordenando datas e consultas
+        let ordenacao = quicksortMod(datas, consultas);
+
+        for (let i = 0; i < ordenacao.length; i++) {
+
+            let dataAtual     = ordenacao[i][0][0];
+
+            if (dataAtual == undefined) {
+                continue; // As vezes a função vai retorar pivots
+                //vazios, isso lida com eles
+            }
+
+            let hora          = dataAtual.slice(4,6);
+            let dia           = dataAtual.slice(2,4);
+            let mes           = dataAtual.slice(0,2);
+            let dataFormatada = `${hora}:00 - ${dia}/${mes}`;
+
+            let consulta = ordenacao[i][1][0];
+            let cliente  = consulta.nomeCliente;
+            let pet      = consulta.nomePet;
+            let status   = consulta.status;
+
+            console.log(consulta);
+
+            console.log(`${i+1}. ${dataFormatada}`);
+            console.log(`-> Cliente: ${cliente} | Pet: ${pet} | Status: ${status};`);
+        }
+    }
+    mudarStatusConsulta (funcionarios, consultas) {
+        let titulo = "---------- MUDAR STATUS DE CONSULTA ----------";
+        while (true) {
+            console.clear();
+            console.log(titulo);
+
+            this.mostrarConsultas();
+            let consultas = quicksortMod(this.consultas);
+            let consultaAtual;
+
+            console.log("Insira o índice da consulta: ");
+            let indice = prompt("~ ");
+            
+            indice = parseInt(indice);
+
+            if (indice == NaN || indice < 1 || indice > nomesClientes.length) {
+                invalido();
+                continue;
+            } else {
+                indice--;
+                
+                console.clear();
+                console.log(titulo);
+
+                console.log("Qual vai ser o novo status?");
+                console.log("1. cancelada;");
+                console.log("2. adiada;");
+                console.log("3. realizada; ");
+                console.log("4. pendente");
+                let opcao = prompt("~ ");
+                opcao = parseInt(opcao);
+
+                if (opcao == NaN || opcao < 1 || opcao > 4) {
+                    invalido();
+                    continue;
+                }
+
+                consultaAtual = consultas[indice][0][0]; // Isso pega a data da consulta atual
+
+                let novoStatus;
+                switch(opcao) {
+                    case 1:
+                        novoStatus = "cancelada";
+                    case 2:
+                        novoStatus = "adiada";
+                    case 3:
+                        novoStatus = "realizada";
+                    case 4:
+                        novoStatus = "pendente";
+                }
+
+                this.consultas[consultaAtual].status = novoStatus;
+
+            }
+            console.clear();
+            console.log(titulo);
+
+            console.log("Deseja remover mais algum pet? (s/n)");
+            let opcao = prompt("~ ");
+
+            if (opcao == "s") {
+                //NADA
+            } else {
+                break;
+            }
+        }
+        funcionarios[this.nomeFuncionario].consultas = this.consultas;
+        consultas[this.nomeFuncionario] = this.consultas;
+        return [funcionarios, consultas];
+    }
+    marcarConsultas (funcionarios, consultas) {
+        
+        let titulo = "---------- MARCAR CONSULTA ----------";
+        
+        while (true) {
+            let dataOriginal;
+
+            let remarcar = false;
+            let datasOcupadas = Object.keys(this.consultas);
+    
+            // Loop para criar a data
+            while (true) {
+                console.clear();
+                console.log(titulo);
+                
+                console.log("Digite a hora da consulta: (Somente a hora, sem minutos)");
+                let hora = prompt("~ ");
+                console.log("Digite o dia da consulta: ");
+                let dia = prompt("~ ");
+                console.log("Digite o mês da consulta: (1-12)");
+                let mes = prompt("~ ");
+    
+                let data = `${mes}${dia}${hora}`;
+                dataOriginal = data;
+    
+                if (this.consultas == {}) {
+                    break;
+                } else if (datasOcupadas.includes(data)) {
+                    
+                    console.clear();
+                    console.log(titulo);
+                    console.log("Já existe uma consulta nesse horário. Remarcar? (s/n)");
+                    let opcao = prompt(" ~ ");
+    
+                    if (opcao == "s") {
+                        remarcar = true;
+                        break;
+                    } else if (opcao == "n") {
+                        return [funcionarios, consultas];
+                    } else {
+                        invalido("Voltando para marcar nova data.");
+                    }
+                }   
+            }
+            if (remarcar === true) {
+                console.clear();
+                console.log(titulo);
+                console.log("Para quando deseja remarcar?");
+
+                console.log("Digite a hora da consulta: (Somente a hora, sem minutos)");
+                let hora = prompt("~ ");
+                console.log("Digite o dia da consulta: ");
+                let dia = prompt("~ ");
+                console.log("Digite o mês da consulta: (1-12)");
+                let mes = prompt("~ ");
+    
+                let dataNova = `${mes}${dia}${hora}`;
+
+                this.consultas[dataOriginal].data = dataNova;
+                let consulta = this.consultas[dataOriginal];
+
+                delete this.consultas.dataOriginal;
+
+                this.consultas[dataNova] = consulta;
+
+                funcionarios[this.nomeFuncionario].consultas = this.consultas;
+                let consultasGerais = consultas[dataOriginal];
+                if (consultasGerais == undefined) {
+                    delete consultas[dataOriginal];
+                    consultas[dataNova] = [consulta]
+                }
+            }
+        }
+    }
 }
 class Sistema {
 
@@ -580,19 +762,20 @@ class Sistema {
             console.log("6.  Ver lista de funcionários;");
             console.log("7.  Marcar consulta;");
             console.log("8.  Mudar status de consulta;");
-            console.log("9.  Remover cliente;");
-            console.log("10. Remover pet;");
-            console.log("11. Cancelar consulta;");
-            console.log("12. Remover funcionário;");
-            console.log("13. Adicionar Cliente;");
-            console.log("14. Adicionar Pet;")
-            console.log("15. Fazer logout;\n");
+            console.log("9.  Editar consulta;");
+            console.log("10.  Remover cliente;");
+            console.log("11. Remover pet;");
+            console.log("12. Cancelar consulta;");
+            console.log("13. Remover funcionário;");
+            console.log("14. Adicionar Cliente;");
+            console.log("15. Adicionar Pet;")
+            console.log("16. Fazer logout;\n");
 
             opcao = prompt("Insira o número da ação: ");
 
             opcao = parseInt(opcao);
 
-            if (opcao == NaN || opcao <= 0 || opcao > 15) {
+            if (opcao == NaN || opcao <= 0 || opcao > 16) {
                 invalido();
             } else {
                 break;
@@ -711,15 +894,14 @@ class Sistema {
         return nomeFuncionario;
     }
     mostrarConsultas (funcionario) {
+        let titulo = "---------- MOSTRAR CONSULTAS ----------";
+        console.clear();
+        console.log(titulo);
 
-    }
-    editarConsultas (funcionario) {
+        funcionario.mostrarConsultas();
 
+        prompt("Insira qualquer tecla para continuar...");
     }
-    cancelarConsultas(funcionario) {
-
-    }
-    // TODO: FUNCAO INACABADA falta colocar ordem alfabética
     mostrarFuncionarios () {
         console.clear();
 
@@ -738,51 +920,6 @@ class Sistema {
         for (let i = 0; i < quantidade; i++) {
             console.log(`${i+1}. ${funcionarios[i]};`);
         }
-    }
-    //TODO: FUNÇAO INACABADA
-    marcarConsultas (funcionario) {
-        
-        let titulo = "---------- MARCAR CONSULTA ----------";
-        let remarcar = false;
-        let datasOcupadas = Objectfuncionario.consultas.data
-
-        // Loop para criar a data
-        while (true) {
-            console.clear();
-            console.log(titulo);
-            
-            console.log("Digite a hora da consulta: (Somente a hora, sem minutos)");
-            let hora = prompt(" ~ ");
-            console.log("Digite o dia da consulta: ");
-            let dia = prompt(" ~ ");
-            console.log("Digite o mês da consulta: (1-12)");
-            let mes = prompt(" ~ ");
-
-            let data = [hora, dia, mes];
-
-            if (funcionario.consultas == {}) {
-                break;
-            } else if (funcionario.consultas.includes(data)) {
-                
-                console.clear();
-                console.log(titulo);
-                console.log("Já existe uma consulta nesse horário. Remarcar? (s/n)");
-                let opcao = prompt(" ~ ");
-
-                if (opcao == s) {
-                    remarcar = true;
-                    break;
-                } else {
-                    invalido("Voltando para marcar nova data.")
-                }
-            }   
-        }
-        if (remarcar === true) {
-            console.clear();
-            console.log(titulo);
-            console.log("Para quando deseja remarcar")
-        }
-
     }
 
     //TODO: BUG Mesmo quando o funcionario não tem consultas, ele acusa que tem
@@ -893,29 +1030,34 @@ class Sistema {
                         this.marcarConsultas(funcionarioAtual);
                         break;
                     case 8:
-                        this.editarConsultas(funcionarioAtual);
+                        let mudar = funcionarioAtual.mudarStatusConsulta();
+                        this.funcionarios = mudar[0];
+                        this.consultas = mudar[1];
                         break;
                     case 9:
-                        this.clientes = funcionarioAtual.removerCliente(this.clientes);
+                        this.editarConsultas(funcionarioAtual);
                         break;
                     case 10:
-                        this.clientes = funcionarioAtual.removerPet(this.clientes);
+                        this.clientes = funcionarioAtual.removerCliente(this.clientes);
                         break;
                     case 11:
-                        this.cancelarConsultas(funcionarioAtual);
+                        this.clientes = funcionarioAtual.removerPet(this.clientes);
                         break;
                     case 12:
-                        this.removerFuncionario(funcionarioAtual);
+                        this.cancelarConsultas(funcionarioAtual);
                         break;
                     case 13:
-                        this.clientes = funcionarioAtual.adicionarCliente(this.clientes);
+                        this.removerFuncionario(funcionarioAtual);
                         break;
                     case 14:
+                        this.clientes = funcionarioAtual.adicionarCliente(this.clientes);
+                        break;
+                    case 15:
                         let arr = funcionarioAtual.adicionarPet(this.clientes, this.funcionarios);
                         this.clientes     = arr[0];
                         this.funcionarios = arr[1];
                         break;
-                    case 15:
+                    case 16:
                         mainBreak = true;
                         break;
                 }
@@ -955,6 +1097,40 @@ function capitalize(str) {
         return str;
     }
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+// Função para ordenar consultas cronologicamente
+function quicksortMod(datas, consultas) {
+    
+    /*
+    Função recursiva para ordenar as consultas,
+    uma modificação de quicksort para fazer todas trocas
+    com datas e consultas, em paralelo
+    */
+
+    // Caso base
+    if (datas.length <=1) {
+        return [datas, consultas];
+    }
+
+    // Caso recursivo e declarações
+
+    let pivotDatas             = datas[0];
+    let pivotConsultas         = consultas[0];
+    let listaEsquerdaDatas     = [];
+    let listaDireitaDatas      = [];
+    let listaEsquerdaConsultas = [];
+    let listaDireitaConsultas  = [];
+
+    for (let i=1; i<datas.length; i++) {
+        if (datas[i] < pivotDatas) {
+            listaEsquerdaDatas.push(datas[i]);
+            listaEsquerdaConsultas.push(consultas[i]);
+        } else {
+            listaDireitaDatas.push(datas[i]);
+            listaDireitaConsultas.push(consultas[i]);
+        }
+    }
+    return [quicksortMod(listaEsquerdaDatas, listaEsquerdaConsultas), [[pivotDatas], [pivotConsultas]], quicksortMod(listaDireitaDatas,listaDireitaConsultas)];
 }
 
 let programa = new Sistema();
