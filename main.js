@@ -34,11 +34,11 @@ class Cliente {
 
     #id;
 
-    constructor (nomeClienteC, petsC, fidelizadoC) {
+    constructor (nomeClienteC, petsC) {
         this.#id               = uuidv4();
         this.nomeCliente       = nomeClienteC;
         this.pets              = petsC;
-        this.fidelizado        = fidelizadoC;
+        this.fidelizado        = false;
     }
     
     // Função usada no código para mostrar clientes com seus animais em Funcionario
@@ -212,7 +212,6 @@ class Funcionario {
     }
 
     mostrarPets () {
-        //TODO: Função inacabada
         console.clear();
         
         let titulo = "---------- MOSTRAR PETS ----------";
@@ -226,6 +225,51 @@ class Funcionario {
         }
 
         prompt("~ Insira qualquer tecla para continuar.")
+    }
+    adicionarCliente (clientes) {
+        let titulo = "---------- ADICIONAR CLIENTE ----------";
+        let novosClientes = [];
+        
+        while (true) {
+            console.clear();
+            console.log(titulo);
+
+            let nome = prompt("Insira o nome do cliente: ");
+            let pets = [];
+
+            while (true) {
+                let pet = prompt("Insira o nome do pet deste cliente: ");
+
+                pets.push(pet);
+
+                console.clear();
+                console.log(titulo);
+                let mais = prompt("Deseja adicionar mais um pet? (s/n)\n~ ");
+                if (mais == "s") {
+                    // NADA
+                } else {
+                    break;
+                }
+            }
+
+            // Instanciando um novo cliente e adicionando ele ao dicionario de novos clientes
+            let clienteAtual = new Cliente(nome, pets);
+            novosClientes.push(clienteAtual);
+
+            console.clear();
+            console.log(titulo);
+
+            console.log("Deseja adicionar mais um cliente? (s/n)");
+            let opcao = prompt("~ ");
+            if (opcao == "s") {
+                // NADA
+            } else {
+                break;
+            }
+        }
+        this.clientes.push(novosClientes);
+        clientes[this.nomeFuncionario] = this.clientes;
+        return clientes;
     }
     removerCliente() {
         //TODO: fazer essa função
@@ -601,7 +645,7 @@ class Sistema {
                         this.removerFuncionario(funcionarioAtual);
                         break;
                     case 13:
-                        funcionarioAtual.adicionarCliente();
+                        this.clientes = funcionarioAtual.adicionarCliente(this.clientes);
                         break;
                     case 14:
                         this.adicionarPet(funcionarioAtual);
