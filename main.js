@@ -557,35 +557,36 @@ class Funcionario {
         console.clear();
         console.log(titulo);
 
-        let datas = Object.keys(this.consultas);
-        let consultas = Object.values(this.consultas);
+        if (Object.keys(this.consultas) != 0) {
 
-        // Ordenando datas e consultas
-        let ordenacao = quicksortMod(datas, consultas);
-
-        for (let i = 0; i < ordenacao.length; i++) {
-
-            let dataAtual     = ordenacao[i][0][0];
-
-            if (dataAtual == undefined) {
-                continue; // As vezes a função vai retorar pivots
-                //vazios, isso lida com eles
+            let datas = Object.keys(this.consultas);
+            let consultas = Object.values(this.consultas);
+    
+            // Ordenando datas e consultas
+            let ordenacao = quicksortMod(datas, consultas);
+    
+            for (let i = 0; i < ordenacao.length; i++) {
+    
+                let dataAtual     = ordenacao[i][0][0];
+    
+                if (dataAtual == undefined) {
+                    continue; // As vezes a função vai retorar pivots
+                    //vazios, isso lida com eles
+                }
+    
+                let hora          = dataAtual.slice(4,6);
+                let dia           = dataAtual.slice(2,4);
+                let mes           = dataAtual.slice(0,2);
+                let dataFormatada = `${hora}:00 - ${dia}/${mes}`;
+    
+                let consulta = ordenacao[i][1][0];
+                let cliente  = consulta.nomeCliente;
+                let pet      = consulta.nomePet;
+                let status   = consulta.status;
+    
+                console.log(`${i+1}. ${dataFormatada}`);
+                console.log(`-> Cliente: ${cliente} | Pet: ${pet} | Status: ${status};`);
             }
-
-            let hora          = dataAtual.slice(4,6);
-            let dia           = dataAtual.slice(2,4);
-            let mes           = dataAtual.slice(0,2);
-            let dataFormatada = `${hora}:00 - ${dia}/${mes}`;
-
-            let consulta = ordenacao[i][1][0];
-            let cliente  = consulta.nomeCliente;
-            let pet      = consulta.nomePet;
-            let status   = consulta.status;
-
-            console.log(consulta);
-
-            console.log(`${i+1}. ${dataFormatada}`);
-            console.log(`-> Cliente: ${cliente} | Pet: ${pet} | Status: ${status};`);
         }
     }
     mudarStatusConsulta (funcionarios, consultas) {
@@ -1133,4 +1134,11 @@ function quicksortMod(datas, consultas) {
     return [quicksortMod(listaEsquerdaDatas, listaEsquerdaConsultas), [[pivotDatas], [pivotConsultas]], quicksortMod(listaDireitaDatas,listaDireitaConsultas)];
 }
 
-let programa = new Sistema();
+//let programa = new Sistema();
+
+
+let caba = new Funcionario;
+
+caba.consultas = {"101010": {data: "101010", nomeCliente: "Joao", nomePet: "Thor", status: "pendente"}, "090909": {data: "090909", nomeCliente: "Joao", nomePet: "Thor", status: "pendente"}, "111111": {data: "111111", nomeCliente: "Joao", nomePet: "Thor", status: "pendente"}, "101010": {data: "080808", nomeCliente: "Joao", nomePet: "Thor", status: "pendente"}};
+
+caba.mostrarConsultas();
