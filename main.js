@@ -40,11 +40,39 @@ class Cliente {
         this.pets              = petsC;
         this.fidelizado        = fidelizadoC;
     }
-    mostrarPets () {
+    
+    // Função usada no código para mostrar clientes com seus animais em Funcionario
+    mostrarPetsLinha () {
+        let pets = this.pets.sort();
         let quantidade = pets.length;
-        for (let i = 1; i <= quantidade; i++) {
-            console.log(`${i}. ${pets[i]}`);
+
+        let text = ``;
+        for (let i=0; i<quantidade; i++) {
+            if (i!=0){
+                text = `${text}, ${pets[i]}`;
+            } else if (i==quantidade-1) {
+                text = `${text}, ${pets[i]}`;
+            } else {
+                text = `${pets[i]}`;
+            }
         }
+        return text;
+    }
+    // Função usada no código para mostrar os pets em Funcionario
+    mostrarPets () {
+        let text = mostrarPetsLinha();
+        text = `${text} - ${this.nomeCliente}`;
+        return text;
+    }
+    adicionarPet () {
+        let titulo = "---------- ADICIONAR PET ----------";
+        console.clear();
+        console.log(titulo);
+        let nome = prompt("Insira o nome do pet: ");
+        this.pets.push(nome);
+        console.clear();
+        console.log(titulo);
+        console.log(`${nome} adicionado à lista de pets de ${this.nomeCliente}`);
     }
 }
 class Animal {
@@ -102,14 +130,13 @@ class Funcionario {
     */
 
     #id;
-    #senha;
+    // #senha;
 
     constructor (nomeFuncionarioC, senhaC) {
         this.#id             = uuidv4();
         this.nomeFuncionario = nomeFuncionarioC;
-        this.#senha          = senhaC;
+        this.senha          = senhaC;
         this.clientes        = [];
-        //this.pets            = [];
         this.consultas       = {};
         let quantidadeClientes = this.clientes.length;
         let nomeClientes       = Object.keys(this.clientes);
@@ -130,7 +157,7 @@ class Funcionario {
         // Funcionario = {id: identification, nome: "Nome", senha: "senha", clientes: {"nome": ["pet1", "pet2", ...]}, consultas: {}}
 
         console.log(`Nome:     ${this.nomeFuncionario}`);
-        console.log(`Senha:    ${this.#senha}`);
+        console.log(`Senha:    ${this.senha}`);
 
         prompt("~ Insira qualquer tecla para continuar...");
     }
@@ -170,31 +197,34 @@ class Funcionario {
     mostrarClientes () {
         console.clear();
 
-        let titulo = "---------- VER CLIENTES ----------";
+        let titulo = "---------- MOSTRAR CLIENTES ----------";
 
         console.log(titulo);
 
         let clientes = Object.keys(this.clientes).sort();
         let quantidade = clientes.length;
-        for (let i = 1; i <= quantidade; i++) {
-            console.log(`${i}. ${clientes[i]}`);
+
+        for (let i = 0; i < quantidade; i++) {
+
+            console.log(`${i+1}. ${clientes[i]}: ${clientes[i].mostrarPetsLinha()}`);
         }
-        prompt("~ Insira qualquer tecla para continuar.")
+        prompt("~ Insira qualquer tecla para continuar.");
     }
 
     mostrarPets () {
         //TODO: Função inacabada
         console.clear();
         
-        let titulo = "---------- VER PETS ----------";
+        let titulo = "---------- MOSTRAR PETS ----------";
 
         console.log(titulo);
 
-        let pets = this.clientes.values();
-        let quantidade = pets.length;
-        for (let i = 1; i <= quantidade; i++) {
-            console.log(`${i}. ${pets[i]}`);
+        let quantidadeClientes = Object.keys(clientes).length; 
+        for (let i = 0; i < quantidadeClientes; i++) {
+            let clienteAtual = this.clientes[i];
+            console.log(clienteAtual.mostrarPets());
         }
+
         prompt("~ Insira qualquer tecla para continuar.")
     }
     removerCliente() {
@@ -234,13 +264,15 @@ class Sistema {
             console.log("10. Remover pet;");
             console.log("11. Cancelar consulta;");
             console.log("12. Remover funcionário;");
-            console.log("13. Fazer logout;\n");
+            console.log("13. Adicionar Cliente;");
+            console.log("14. Adicionar Pet;")
+            console.log("15. Fazer logout;\n");
 
             opcao = prompt("Insira o número da ação: ");
 
             opcao = parseInt(opcao);
 
-            if (opcao == NaN || opcao <= 0 || opcao > 13) {
+            if (opcao == NaN || opcao <= 0 || opcao > 15) {
                 invalido();
             } else {
                 break;
@@ -427,9 +459,23 @@ class Sistema {
         // Loop
 
     }
+    adicionarPet(funcionario) {
+        /*
+        Essa função interage com o usuário para selecionar o cliente
+        em seguida chama a função de mesmo nome da classe Cliente e adiciona o pet.
+        */
+       let titulo = "---------- ADICIONAR PET ----------";
+
+       console.clear();
+       console.log(titulo);
+
+       // Usar função mostrar clientes.
+
+    }
     removerPet (funcionario) {
 
     }
+    //TODO: BUG Mesmo quando o funcionario não tem consultas, ele acusa que tem
     removerFuncionario () {
         while (true){
             console.clear();
@@ -555,6 +601,12 @@ class Sistema {
                         this.removerFuncionario(funcionarioAtual);
                         break;
                     case 13:
+                        funcionarioAtual.adicionarCliente();
+                        break;
+                    case 14:
+                        this.adicionarPet(funcionarioAtual);
+                        break;
+                    case 15:
                         this.logout();
                         mainBreak = true;
                         break;
