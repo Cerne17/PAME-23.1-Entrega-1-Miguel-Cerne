@@ -37,7 +37,7 @@ class Cliente {
     constructor (nomeClienteC, petsC) {
         this.#id               = uuidv4();
         this.nomeCliente       = nomeClienteC; // string
-        this.pets              = petsC; // array de objetos, chave: nome, valor: objeto
+        this.pets              = petsC; // array de objetos
         this.fidelizado        = false;
     }
     
@@ -77,15 +77,14 @@ class Cliente {
         text = `${this.nomeCliente} : ${text}`;
         return text;
     }
-    adicionarPet (nomeDono) {
+    adicionarPet (nomeDono, nomePet) {
         let titulo = "---------- ADICIONAR PET ----------";
         console.clear();
         console.log(titulo);
-        let nome = prompt("Insira o nome do pet: ");
-        this.pets[nomeDono] = new Animal(nome, nomeDono);
+        this.pets.push(new Animal(nomePet, nomeDono));
         console.clear();
         console.log(titulo);
-        console.log(`${nome} adicionado à lista de pets de ${this.nomeCliente}`);
+        console.log(`${nomePet} adicionado à lista de pets de ${this.nomeCliente}`);
     }
     
     removerPet () {
@@ -95,7 +94,7 @@ class Cliente {
 
         let quantidade = this.pets.length;
         for (let i = 0; i < quantidade; i++) {
-            console.log(`${i+1}. ${this.pets[i]};`);
+            console.log(`${i+1}. ${this.pets[i].nomePet};`);
         }
         console.log("Insira o indice do pet a ser removido: ");
         let indice = prompt("~ ") 
@@ -110,7 +109,7 @@ class Cliente {
             console.clear();
             console.log(titulo);
 
-            console.log(`Deseja mesmo remover ${this.pets[indice]}? (s/n)`);
+            console.log(`Deseja mesmo remover ${this.pets[indice].nomePet}? (s/n)`);
             let confirmacao = prompt("~ ");
 
             if (confirmacao == "s") {
@@ -360,21 +359,21 @@ class Funcionario {
         return clientes;
     }
     //TODO: CHECAR
-    adicionarPet (clientes) {
+    adicionarPet (clientes, funcionarios) {
         let titulo = "---------- ADICIONAR PET ----------";
         while (true) {
             console.clear();
             console.log(titulo);
 
-            let quantidade = Object.keys(this.pets).length;
-            let nomesPets = [];
+            let quantidade = Object.keys(this.clientes).length;
+            let nomesClientes = [];
 
             for (let i = 0; i < quantidade; i++) {
-                let petAtual = this.pets.keys[i];
-                let nomePetAtual = petAtual.nomeCliente;
-                nomesPets.push(nomePetAtual);
+                let clienteAtual = this.clientes[i];
+                let nomeClienteAtual = clienteAtual.nomeCliente;
+                nomesClientes.push(nomeClienteAtual);
 
-                console.log(`${i+1}. ${capitalize(nomePetAtual)}`);
+                console.log(`${i+1}. ${capitalize(nomeClienteAtual)}`);
             }
 
             console.log("Insira o índice do cliente para adicionar um pet: ");
@@ -382,7 +381,7 @@ class Funcionario {
             
             indice = parseInt(indice);
 
-            if (indice == NaN || indice < 1 || indice > nomesPets.length) {
+            if (indice == NaN || indice < 1 || indice > nomesClientes.length) {
                 invalido();
                 continue;
             } else {
@@ -396,8 +395,17 @@ class Funcionario {
 
                 if (confirmacao == "s") {
                     let cliente = this.clientes[indice];
-                    cliente.adicionarPet(this.nomeCliente);
+                    console.clear();
+                    console.log(titulo);
+                    let nomePet = prompt("Insira o nome do pet: ");
+                    cliente.adicionarPet(this.nomeCliente, nomePet);
                     this.clientes[indice] = cliente;
+                    this.pets[nomePet] = cliente.pets[-1];
+
+                    // console.log(this.clientes); //TODO: Remover
+                    // console.log(this.pets);
+                    // prompt()
+                    
                 } else if (confirmacao == "n") {
                     console.clear();
                     console.log(titulo);
@@ -420,7 +428,10 @@ class Funcionario {
                 break;
             }
         }
-        return clientes[this.nomeFuncionario] = this.clientes;
+        funcionarios[this.nomeFuncionario].clientes = this.clientes;
+        funcionarios[this.nomeFuncionario].pets     = this.pets;
+
+        return [clientes[this.nomeFuncionario] = this.clientes, funcionarios];
     }
     removerPet (clientes) {
         let titulo = "---------- REMOVER PET ----------";
@@ -689,11 +700,12 @@ class Sistema {
             if (senhaFuncionario == confirmacao && senhaFuncionario == senhaCerta) {
                 break;
             } else if (senhaFuncionario != confirmacao) {
-                invalido("As senhas não conferem, tente novamente.")
+                invalido("As senhas não conferem, tente novamente.");
+                break;
             } else if (senhaFuncionario == confirmacao && !(senhaFuncionario == senhaCerta)){
                 invalido("As senhas conferem, mas estão erradas. Tente novamente.");
             } else {
-                invalido()
+                invalido();
             }
         }
         return nomeFuncionario;
@@ -717,6 +729,11 @@ class Sistema {
         
         let funcionarios = Object.keys(this.funcionarios);
         let quantidade = funcionarios.length;
+
+        for (let i = 0; i < quantidade; i++) {
+            funcionarios[i] = capitalize(funcionarios[i]);
+        }
+        funcionarios = funcionarios.sort();
 
         for (let i = 0; i < quantidade; i++) {
             console.log(`${i+1}. ${funcionarios[i]};`);
@@ -894,7 +911,9 @@ class Sistema {
                         this.clientes = funcionarioAtual.adicionarCliente(this.clientes);
                         break;
                     case 14:
-                        this.clientes = funcionarioAtual.adicionarPet(this.clientes);
+                        let arr = funcionarioAtual.adicionarPet(this.clientes, this.funcionarios);
+                        this.clientes     = arr[0];
+                        this.funcionarios = arr[1];
                         break;
                     case 15:
                         mainBreak = true;
