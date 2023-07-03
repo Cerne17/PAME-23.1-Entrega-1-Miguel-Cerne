@@ -296,7 +296,9 @@ class Funcionario {
         return clientes;
     }
     removerCliente() {
-        //TODO: fazer essa função
+        let titulo = "---------- REMOVER CLIENTE ----------";
+
+
     }
 }
 class Sistema {
@@ -466,6 +468,7 @@ class Sistema {
     cancelarConsultas(funcionario) {
 
     }
+    // TODO: FUNCAO INACABADA falta colocar ordem alfabética
     mostrarFuncionarios () {
         console.clear();
 
@@ -527,22 +530,22 @@ class Sistema {
         // Loop
 
     }
-    adicionarPet(funcionario) {
-        /*
-        Essa função interage com o usuário para selecionar o cliente
-        em seguida chama a função de mesmo nome da classe Cliente e adiciona o pet.
-        */
-       let titulo = "---------- ADICIONAR PET ----------";
+    // adicionarPet(funcionario) {
+    //     /*
+    //     Essa função interage com o usuário para selecionar o cliente
+    //     em seguida chama a função de mesmo nome da classe Cliente e adiciona o pet.
+    //     */
+    //    let titulo = "---------- ADICIONAR PET ----------";
 
-       console.clear();
-       console.log(titulo);
+    //    console.clear();
+    //    console.log(titulo);
 
-       // Usar função mostrar clientes.
+    //    // Usar função mostrar clientes.
 
-    }
-    removerPet (funcionario) {
+    // }
+    // removerPet (funcionario) {
 
-    }
+    // }
     //TODO: BUG Mesmo quando o funcionario não tem consultas, ele acusa que tem
     removerFuncionario () {
         while (true){
