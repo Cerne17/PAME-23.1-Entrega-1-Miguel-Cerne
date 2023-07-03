@@ -109,7 +109,7 @@ class Funcionario {
         this.nomeFuncionario = nomeFuncionarioC;
         this.#senha          = senhaC;
         this.clientes        = [];
-        this.pets            = [];
+        //this.pets            = [];
         this.consultas       = {};
         let quantidadeClientes = this.clientes.length;
         let nomeClientes       = Object.keys(this.clientes);
@@ -124,17 +124,21 @@ class Funcionario {
     }
 
     mostrarDados () {
-
-        console.log("---------- MOSTRAR DADOS ----------");
+        console.clear();
+        let titulo = "---------- MOSTRAR DADOS ----------";
+        console.log(titulo);
         // Funcionario = {id: identification, nome: "Nome", senha: "senha", clientes: {"nome": ["pet1", "pet2", ...]}, consultas: {}}
 
         console.log(`Nome:     ${this.nomeFuncionario}`);
         console.log(`Senha:    ${this.#senha}`);
+
+        prompt("~ Insira qualquer tecla para continuar...");
     }
 
     get id () {
         return this.id;
     }
+
     modificarDados () {
         
         let valido = false;
@@ -162,26 +166,36 @@ class Funcionario {
             }
         }
     }
+
     mostrarClientes () {
         console.clear();
-        console.log("---------- VER DADOS ----------");
+
+        let titulo = "---------- VER CLIENTES ----------";
+
+        console.log(titulo);
 
         let clientes = Object.keys(this.clientes).sort();
         let quantidade = clientes.length;
         for (let i = 1; i <= quantidade; i++) {
             console.log(`${i}. ${clientes[i]}`);
         }
+        prompt("~ Insira qualquer tecla para continuar.")
     }
+
     mostrarPets () {
         //TODO: Função inacabada
         console.clear();
-        console.log("---------- VER PETS ----------");
+        
+        let titulo = "---------- VER PETS ----------";
+
+        console.log(titulo);
 
         let pets = this.clientes.values();
         let quantidade = pets.length;
         for (let i = 1; i <= quantidade; i++) {
             console.log(`${i}. ${pets[i]}`);
         }
+        prompt("~ Insira qualquer tecla para continuar.")
     }
     removerCliente() {
         //TODO: fazer essa função
@@ -353,8 +367,20 @@ class Sistema {
 
     }
     mostrarFuncionarios () {
+        console.clear();
 
+        let titulo = "---------- MOSTRAR FUNCIONARIOS ----------";
+
+        console.log(titulo);
+        
+        let funcionarios = Object.keys(this.funcionarios);
+        let quantidade = funcionarios.length;
+
+        for (let i = 0; i < quantidade; i++) {
+            console.log(`${i+1}. ${funcionarios[i]};`);
+        }
     }
+    //TODO: FUNÇAO INACABADA
     marcarConsultas (funcionario) {
         
         let titulo = "---------- MARCAR CONSULTA ----------";
@@ -376,7 +402,7 @@ class Sistema {
             let data = [hora, dia, mes];
 
             if (funcionario.consultas == {}) {
-                break
+                break;
             } else if (funcionario.consultas.includes(data)) {
                 
                 console.clear();
@@ -386,7 +412,7 @@ class Sistema {
 
                 if (opcao == s) {
                     remarcar = true;
-                    break
+                    break;
                 } else {
                     invalido("Voltando para marcar nova data.")
                 }
@@ -405,7 +431,56 @@ class Sistema {
 
     }
     removerFuncionario () {
+        while (true){
+            console.clear();
 
+            let titulo = "---------- REMOVER FUNCIONARIO ----------";
+
+            console.log(titulo);
+            this.mostrarFuncionarios();
+
+            let indice = prompt("Insira o índice do funcionário a ser deletado: ");
+            let funcionarios = Object.keys(this.funcionarios);
+
+            let deletar = funcionarios[indice-1];
+
+            console.clear();
+            console.log(titulo);
+
+            console.log(`Deseja deletar o(a) ${deletar}? (s/n)`);
+            let confirmar = prompt(" ~ ");
+            if (confirmar == "s") {
+                console.clear();
+                console.log(titulo);
+                console.log("Continuando deleção.");
+
+                let funcionario = this.funcionarios[deletar];
+                console.log(funcionario);
+                let consultas = funcionario.consultas;
+                console.log(consultas);
+
+                if (consultas == {}) {
+                    delete this.funcionarios[deletar];
+                    console.log("Deleção concluída!");
+                    break;
+                } else {
+                    invalido(`${deletar} ainda tem consultas pendentes, deleção cancelada.`);
+                    break;
+                }
+
+            } else if (confirmar == "n") {
+                console.clear();
+                console.log(titulo);
+
+                console.log("Deleção cancelada. Deseja voltar ao menu? (s/n)");
+                let opcao = prompt(" ~ ");
+                if (opcao == "s") {
+                    break;
+                }
+            } else {
+                invalido();
+            }
+        }
     }
     logout (funcionario) {
         
@@ -416,7 +491,7 @@ class Sistema {
     // Função principal do programa
     main () {
         while (true) {
-
+            console.clear();
             // Quando o sistema é inicializado, devemos primeiro fazer o login/cadastro do usuário no sistema em si
             let acao = this.menuNaoLogado();
             let funcionarioAtual = -1;
@@ -459,6 +534,7 @@ class Sistema {
                         break;
                     case 6:
                         this.mostrarFuncionarios();
+                        prompt("~ Insira qualquer tecla para continuar...");
                         break;
                     case 7:
                         this.marcarConsultas(funcionarioAtual);
