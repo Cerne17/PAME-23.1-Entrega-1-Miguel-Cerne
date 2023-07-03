@@ -295,6 +295,63 @@ class Funcionario {
         clientes[this.nomeFuncionario] = this.clientes;
         return clientes;
     }
+    adicionarPet (clientes) {
+        let titulo = "---------- ADICIONAR PET ----------";
+        while (true) {
+            console.clear();
+            console.log(titulo);
+
+            let quantidade = this.clientes.length;
+            let nomesClientes = [];
+
+            for (let i = 0; i < quantidade; i++) {
+                let clienteAtual = this.clientes[i];
+                let nomeClienteAtual = clienteAtual.nomeCliente;
+                nomesClientes.push(nomeClienteAtual);
+
+                console.log(`${i+1}. ${capitalize(nomeClienteAtual)}`);
+            }
+
+            console.log("Insira o índice do cliente para adicionar um pet: ");
+            let indice = prompt("~ ");
+            
+            indice = parseInt(indice);
+
+            if (indice == NaN || indice < 1 || indice > nomesClientes.length) {
+                invalido();
+                continue;
+            } else {
+                indice--;
+                
+                console.clear();
+                console.log(titulo);
+
+                console.log(`Deseja mesmo adicionar um pet para ${nomesClientes[indice]}? (s/n)`);
+                let confirmacao = prompt("~ ");
+
+                if (confirmacao == "s") {
+                    let cliente = this.clientes[indice];
+                    cliente.adicionarPet();
+                    this.clientes[indice] = cliente;
+                } else {
+                    invalido("Entrada inválida, tente novamente");
+                    continue;
+                }
+            }
+            console.clear();
+            console.log(titulo);
+
+            console.log("Deseja adicionar mais algum pet? (s/n)");
+            let opcao = prompt("~ ");
+
+            if (opcao == "s") {
+                //NADA
+            } else {
+                break;
+            }
+        }
+        return clientes[this.nomeFuncionario] = this.clientes;
+    }
     removerCliente(clientes) {
         let titulo = "---------- REMOVER CLIENTE ----------";
         while (true) {
@@ -649,9 +706,6 @@ class Sistema {
             }
         }
     }
-    logout (funcionario) {
-        
-    }
     quit() {
         process.exit();
     }
@@ -725,10 +779,9 @@ class Sistema {
                         this.clientes = funcionarioAtual.adicionarCliente(this.clientes);
                         break;
                     case 14:
-                        this.adicionarPet(funcionarioAtual);
+                        this.clientes = funcionarioAtual.adicionarPet(this.clientes);
                         break;
                     case 15:
-                        this.logout();
                         mainBreak = true;
                         break;
                 }
