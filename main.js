@@ -295,10 +295,60 @@ class Funcionario {
         clientes[this.nomeFuncionario] = this.clientes;
         return clientes;
     }
-    removerCliente() {
+    removerCliente(clientes) {
         let titulo = "---------- REMOVER CLIENTE ----------";
+        while (true) {
+            console.clear();
+            console.log(titulo);
 
+            let quantidade = this.clientes.length;
+            let nomesClientes = [];
 
+            for (let i = 0; i < quantidade; i++) {
+                let clienteAtual = this.clientes[i];
+                let nomeClienteAtual = clienteAtual.nomeCliente;
+                nomesClientes.push(nomeClienteAtual);
+
+                console.log(`${i+1}. ${capitalize(nomeClienteAtual)}`);
+            }
+
+            console.log("Insira o índice do cliente para ser removido: ");
+            let indice = prompt("~ ");
+            
+            indice = parseInt(indice);
+
+            if (indice == NaN || indice < 1 || indice > nomesClientes.length) {
+                invalido();
+                continue;
+            } else {
+                indice--;
+                
+                console.clear();
+                console.log(titulo);
+
+                console.log(`Deseja mesmo deletar ${nomesClientes[indice]}? (s/n)`);
+                let confirmacao = prompt("~ ");
+
+                if (confirmacao == "s") {
+                    this.clientes.splice(indice, 1);
+                } else {
+                    invalido("Entrada inválida, tente novamente");
+                    continue;
+                }
+            }
+            console.clear();
+            console.log(titulo);
+
+            console.log("Deseja remover mais algum cliente? (s/n)");
+            let opcao = prompt("~ ");
+
+            if (opcao == "s") {
+                //NADA
+            } else {
+                break;
+            }
+        }
+        return clientes[this.nomeFuncionario] = this.clientes;
     }
 }
 class Sistema {
@@ -660,7 +710,7 @@ class Sistema {
                         this.editarConsultas(funcionarioAtual);
                         break;
                     case 9:
-                        funcionarioAtual.removerCliente();
+                        this.clientes = funcionarioAtual.removerCliente(this.clientes);
                         break;
                     case 10:
                         this.removerPet(funcionarioAtual);

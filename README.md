@@ -13,10 +13,11 @@ ORGANIZAÇÃO DO PROJETO:
         4. Consulta;
         5. Sistema.
     
-    As classes estão organizadas de forma que cada uma tenha seus atributos básicos e possam ter métodos em caso de
-    funcionalidades extras necessárias.
-    Tentei, portanto, deixar meu código bem explicado e limpo
-    de forma que ele seja modularizado e facilmente expansível.
+    As classes estão organizadas de forma que cada uma tenha seus
+    atributos básicos e possam ter métodos em caso de
+    funcionalidades extras necessárias. Tentei, portanto, deixar
+    meu código bem explicado e limpo de forma que ele seja 
+    modularizado e facilmente expansível.
 
 
 -----------------------------------------------
