@@ -36,32 +36,38 @@ class Cliente {
 
     constructor (nomeClienteC, petsC) {
         this.#id               = uuidv4();
-        this.nomeCliente       = nomeClienteC;
-        this.pets              = petsC;
+        this.nomeCliente       = nomeClienteC; // string
+        this.pets              = petsC; // array de strings
         this.fidelizado        = false;
     }
     
     // Função usada no código para mostrar clientes com seus animais em Funcionario
     mostrarPetsLinha () {
-        let pets = this.pets.sort();
+        let pets = this.pets
         let quantidade = pets.length;
+
+        for (let i = 0; i < quantidade; i++) {
+            pets[i] = capitalize(pets[i]);
+        }
+        pets = pets.sort()
 
         let text = ``;
         for (let i=0; i<quantidade; i++) {
-            if (i!=0){
-                text = `${text}, ${pets[i]}`;
-            } else if (i==quantidade-1) {
+            if (i==0) {
+                text = `${pets[i]}`;
+            } else if (i!=0){
                 text = `${text}, ${pets[i]}`;
             } else {
-                text = `${pets[i]}`;
+                text = `${text}, ${pets[i]}`;
             }
         }
+
         return text;
     }
     // Função usada no código para mostrar os pets em Funcionario
     mostrarPets () {
-        let text = mostrarPetsLinha();
-        text = `${text} - ${this.nomeCliente}`;
+        let text = this.mostrarPetsLinha();
+        text = `${this.nomeCliente} : ${text}`;
         return text;
     }
     adicionarPet () {
@@ -201,13 +207,32 @@ class Funcionario {
 
         console.log(titulo);
 
-        let clientes = Object.keys(this.clientes).sort();
-        let quantidade = clientes.length;
-
+        let quantidade = this.clientes.length;
+        let nomesClientes = [];
+        
         for (let i = 0; i < quantidade; i++) {
+            
+            let clienteAtual = this.clientes[i];
+            let petsAtuais = clienteAtual.pets;
+            let nomeClienteAtual = `${capitalize(clienteAtual.nomeCliente)} : `;
 
-            console.log(`${i+1}. ${clientes[i]}: ${clientes[i].mostrarPetsLinha()}`);
+            for (let j = 0; j < petsAtuais.length; j++) {
+                if (j == petsAtuais.length -1) {
+                    nomeClienteAtual = `${nomeClienteAtual} ${capitalize(petsAtuais[j])};`;
+                } else {
+                    nomeClienteAtual = `${nomeClienteAtual} ${capitalize(petsAtuais[j])},`;
+                }
+            } 
+
+            nomesClientes.push(nomeClienteAtual);
+
         }
+
+        nomesClientes = nomesClientes.sort();
+        for (let i = 0; i < nomesClientes.length; i++) {
+            console.log(`${i+1}. ${nomesClientes[i]}`);
+        }
+
         prompt("~ Insira qualquer tecla para continuar.");
     }
 
@@ -228,7 +253,6 @@ class Funcionario {
     }
     adicionarCliente (clientes) {
         let titulo = "---------- ADICIONAR CLIENTE ----------";
-        let novosClientes = [];
         
         while (true) {
             console.clear();
@@ -244,7 +268,8 @@ class Funcionario {
 
                 console.clear();
                 console.log(titulo);
-                let mais = prompt("Deseja adicionar mais um pet? (s/n)\n~ ");
+                console.log("Deseja adicionar mais um pet? (s/n)")
+                let mais = prompt("~ ");
                 if (mais == "s") {
                     // NADA
                 } else {
@@ -254,7 +279,7 @@ class Funcionario {
 
             // Instanciando um novo cliente e adicionando ele ao dicionario de novos clientes
             let clienteAtual = new Cliente(nome, pets);
-            novosClientes.push(clienteAtual);
+            this.clientes.push(clienteAtual);
 
             console.clear();
             console.log(titulo);
@@ -267,7 +292,6 @@ class Funcionario {
                 break;
             }
         }
-        this.clientes.push(novosClientes);
         clientes[this.nomeFuncionario] = this.clientes;
         return clientes;
     }
@@ -665,6 +689,7 @@ class Sistema {
         }
     }
 }
+// Função auxiliar para ajudar a cuidar de erros
 function invalido (mensagem="") {
     console.clear();
     if (mensagem === "") {
@@ -680,6 +705,16 @@ function invalido (mensagem="") {
         }
     }
     console.clear(); 
+}
+// Função para capitalizar texto, como capitalize do python
+function capitalize(str) {
+    if (typeof str != 'string') {
+        throw new Error('Entrada deve ser texto.')
+    }
+    if (str.length === 0) {
+        return str;
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 let programa = new Sistema();
