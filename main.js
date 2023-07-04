@@ -684,9 +684,11 @@ class Funcionario {
                 let data = `${mes}${dia}${hora}`;
                 dataOriginal = data;
     
-                if (this.consultas == {}) {
+                if (Object.keys(this.consultas) == 0) {
                     break;
-                } else if (datasOcupadas.includes(data)) {
+                } else if (!datasOcupadas.includes(data)) {
+                    break;
+                } else {
                     
                     console.clear();
                     console.log(titulo);
@@ -728,10 +730,69 @@ class Funcionario {
                 let consultasGerais = consultas[dataOriginal];
                 if (consultasGerais == undefined) {
                     delete consultas[dataOriginal];
-                    consultas[dataNova] = [consulta]
+                    consultas[dataNova] = [consulta];
+                }
+            } else {
+
+                console.clear();
+                console.log(titulo);
+    
+                console.log("Digite o nome do cliente: ");
+                let cliente = prompt("~ ");
+                console.log("Digite o nome do pet: ");
+                let pet = prompt("~ ");
+    
+                console.log("Qual vai ser o status da consulta?");
+                console.log("1. cancelada;");
+                console.log("2. adiada;");
+                console.log("3. realizada; ");
+                console.log("4. pendente");
+                let opcao = prompt("~ ");
+                opcao = parseInt(opcao);
+                let status;
+                if (opcao == NaN || opcao < 1 || opcao > 4) {
+                    invalido();
+                    continue;
+                }
+                switch (opcao) {
+                    case 1:
+                        status = "cancelada";
+                        break;
+                    case 2:
+                        status = "adiada";
+                        break;
+                    case 3:
+                        status = "realizada";
+                        break;
+                    case 4:
+                        status = "pendente";
+                        break;
+                }
+                this.consultas[dataOriginal] = new Consulta(cliente,pet,this.nomeFuncionario,status,dataOriginal);
+    
+                if (Object.keys[consultas] == undefined) {
+                    consultas[this.nomeFuncionario] = [this.consultas[dataOriginal]];
+                } else if (Object.keys[consultas].includes(this.nomeFuncionario)) {
+                    consultas[this.nomeFuncionario].push(this.consultas[dataOriginal]);
+                } else {
+                    consultas[this.nomeFuncionario] = [this.consultas[dataOriginal]];
                 }
             }
+
+            funcionarios[this.nomeFuncionario].consultas = this.consultas;
+
+            console.clear();
+            console.log(titulo);
+            console.log("Deseja marcar mais uma consulta? (s/n)");
+            let opcao = prompt("~ ");
+
+            if (opcao == "s") {
+                // nada
+            } else {
+                break;
+            }
         }
+        return [funcionarios, consultas];
     }
 }
 class Sistema {
@@ -764,7 +825,7 @@ class Sistema {
             console.log("7.  Marcar consulta;");
             console.log("8.  Mudar status de consulta;");
             console.log("9.  Editar consulta;");
-            console.log("10.  Remover cliente;");
+            console.log("10. Remover cliente;");
             console.log("11. Remover pet;");
             console.log("12. Cancelar consulta;");
             console.log("13. Remover funcionário;");
@@ -923,7 +984,7 @@ class Sistema {
         }
     }
 
-    //TODO: BUG Mesmo quando o funcionario não tem consultas, ele acusa que tem
+    //TODO: simplifiquei a proposta, não checo consultas...
     removerFuncionario () {
         while (true){
             console.clear();
@@ -931,10 +992,13 @@ class Sistema {
             let titulo = "---------- REMOVER FUNCIONARIO ----------";
 
             console.log(titulo);
-            this.mostrarFuncionarios();
 
             let indice = prompt("Insira o índice do funcionário a ser deletado: ");
             let funcionarios = Object.keys(this.funcionarios);
+
+            for (let i = 0; i< funcionarios.length; i++) {
+                console.log(`${i+1}. ${capitalize(funcionarios[i])}`);
+            }
 
             let deletar = funcionarios[indice-1];
 
@@ -948,19 +1012,16 @@ class Sistema {
                 console.log(titulo);
                 console.log("Continuando deleção.");
 
-                let funcionario = this.funcionarios[deletar];
-                console.log(funcionario);
-                let consultas = funcionario.consultas;
-                console.log(consultas);
+                delete this.funcionarios[deletar];
 
-                if (consultas == {}) {
-                    delete this.funcionarios[deletar];
-                    console.log("Deleção concluída!");
-                    break;
-                } else {
-                    invalido(`${deletar} ainda tem consultas pendentes, deleção cancelada.`);
-                    break;
-                }
+                // if (consultas == {}) {
+                //     delete this.funcionarios[deletar];
+                //     console.log("Deleção concluída!");
+                //     break;
+                // } else {
+                //     invalido(`${deletar} ainda tem consultas pendentes, deleção cancelada.`);
+                //     break;
+                // }
 
             } else if (confirmar == "n") {
                 console.clear();
@@ -1028,7 +1089,9 @@ class Sistema {
                         prompt("~ Insira qualquer tecla para continuar...");
                         break;
                     case 7:
-                        this.marcarConsultas(funcionarioAtual);
+                        let marcar = funcionarioAtual.marcarConsultas(this.funcionarios, this.consultas);
+                        this.funcionarios = marcar[0];
+                        this.consultas = marcar[1];
                         break;
                     case 8:
                         let mudar = funcionarioAtual.mudarStatusConsulta();
@@ -1134,11 +1197,5 @@ function quicksortMod(datas, consultas) {
     return [quicksortMod(listaEsquerdaDatas, listaEsquerdaConsultas), [[pivotDatas], [pivotConsultas]], quicksortMod(listaDireitaDatas,listaDireitaConsultas)];
 }
 
-//let programa = new Sistema();
+let programa = new Sistema();
 
-
-let caba = new Funcionario;
-
-caba.consultas = {"101010": {data: "101010", nomeCliente: "Joao", nomePet: "Thor", status: "pendente"}, "090909": {data: "090909", nomeCliente: "Joao", nomePet: "Thor", status: "pendente"}, "111111": {data: "111111", nomeCliente: "Joao", nomePet: "Thor", status: "pendente"}, "101010": {data: "080808", nomeCliente: "Joao", nomePet: "Thor", status: "pendente"}};
-
-caba.mostrarConsultas();
